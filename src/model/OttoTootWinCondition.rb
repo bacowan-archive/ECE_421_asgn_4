@@ -1,4 +1,10 @@
-class ConnectFourWinCondition
+class OttoTootWinCondition
+
+  # T and O are the token T and O
+  def initialize(t,o)
+    @T = t
+    @O = o
+  end
 
   # if the win condition has been met, return false. Otherwise, return the user
   # who wins.
@@ -8,11 +14,12 @@ class ConnectFourWinCondition
   #   col: the column where the newest piece was placed
   def win(board,row,col)
     operations = [[:+,nil],[nil,:+],[:+,:+],[:+,:-]] # the four directions to win
+    winVal = false
     anyWin = operations.any? {|i|
-      _axisWin(board,row,col,i[0],i[1])
+      winVal = _axisWin(board,row,col,i[0],i[1])
     }
     if anyWin
-      return board[row,col]
+      return winVal
     end
     return false
 
@@ -26,22 +33,6 @@ class ConnectFourWinCondition
     return (val >= 0 and val < board.getHeight)
   end
 
-  # do the work for _axisWin along side of the given space. Reverse operation
-  # should be either :+ or :-, and indicates which side we are checking
-  def _countOneWay(board,row,col,horizontalOperation,verticalOperation,reverseOperation)
-    num = (1..3).find_index{ |i|
-      x = horizontalOperation == nil ? col : col.send(reverseOperation, 0.send(horizontalOperation,i))
-      y = verticalOperation == nil ? row : row.send(reverseOperation, 0.send(verticalOperation,i))
-      !_inbounds(x,true,board) or
-          !_inbounds(y,false,board) or
-          board[y,x] != board[row,col]
-    }
-    if num == nil # meaning they were all good
-      num = 3
-    end
-    return num
-  end
-
   # see if the win condition is met on the given axis (vertical, horizontal,
   # or one of the two diagonals). HorizontalOperation and verticalOperation
   # should be either :+, :-, or nil, indicating what way will check on the axes.
@@ -51,8 +42,34 @@ class ConnectFourWinCondition
   # horizontal axis. If horizontal is + and vertical is -, we will check a
   # diagonal going down and right.
   def _axisWin(board,row,col,horizontalOperation,verticalOperation)
-    if 1 + _countOneWay(board,row,col,horizontalOperation,verticalOperation,:+) + _countOneWay(board,row,col,horizontalOperation,verticalOperation,:-) >= 4
-      return board[row,col]
+    # start on the far side, and make its way to the other side
+    winVal = false
+    (0..3).find {|i|
+      x = verticalOperation == nil ? row : row.send(verticalOperation,i)
+      y = horizontalOperation == nil ? col : col.send(horizontalOperation,i)
+      items = (0..3).collect {|j|
+        xMinus = verticalOperation == nil ? x : x - 0.send(verticalOperation,j)
+        yMinus = horizontalOperation == nil ? y : y - 0.send(horizontalOperation,j)
+        if !_inbounds(xMinus,false,board) or !_inbounds(yMinus,true,board)
+          false
+        else
+          board[xMinus, yMinus]
+        end
+      }
+      winner = _checkCondition(items)
+      if winner
+        winVal = winner
+        true
+      end
+    }
+    return winVal
+  end
+
+  def _checkCondition(items)
+    if items[0] == @T and items[1] == @O and items[2] == @O and items[3] == @T
+      return @T
+    elsif items[0] == @O and items[1] == @T and items[2] == @T and items[3] == @O
+      return @O
     end
     return false
   end

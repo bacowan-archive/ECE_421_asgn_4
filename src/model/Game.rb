@@ -42,8 +42,9 @@ class Game
     if newPieceRow
       _changeTurn
       _notifyObservers(@board)
-      if @winCondition.win(@board,newPieceRow,column)
-        _notifyObservers(Game.WIN_FLAG,@winCondition.win)
+      win = @winCondition.win(@board,newPieceRow,column)
+      if win
+        _notifyObservers(Game.WIN_FLAG,win)
       elsif @board.full
         _notifyObservers(Game.STALEMATE_FLAG)
       end
