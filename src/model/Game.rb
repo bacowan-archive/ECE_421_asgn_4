@@ -38,10 +38,11 @@ class Game
 
   # place a piece in the given column
   def placePiece(column)
-    if @board.put(@pieces[turn],column)
+    newPieceRow = @board.put(@pieces[turn],column)
+    if newPieceRow
       _changeTurn
       _notifyObservers(@board)
-      if @winCondition.win
+      if @winCondition.win(@board,newPieceRow,column)
         _notifyObservers(Game.WIN_FLAG,@winCondition.win)
       elsif @board.full
         _notifyObservers(Game.STALEMATE_FLAG)

@@ -8,20 +8,34 @@ class Board
 
   # get the piece in a specific spot
   def [](x,y)
-    return @board[x][y]
+    begin
+      return @board[x][y]
+    rescue
+      a = 1
+    end
+
   end
 
   # put a piece in the given column. If the column is full, return false. Else,
-  # return true.
+  # return the row in which the piece was placed.
   def put(piece,column)
-    if _firstEmptyRowOfColumn(column) == nil
+    firstEmpty = _firstEmptyRowOfColumn(column)
+    if firstEmpty == nil
       return false
     end
-    @board[_firstEmptyRowOfColumn(column)][column] = piece
-    return true
+    @board[firstEmpty][column] = piece
+    return firstEmpty
   end
 
+  # get the height of the board
+  def getHeight
+    return @board.length
+  end
 
+  # get the width of the board
+  def getWidth
+    return @board[0].length
+  end
 
   # get the number of pieces in play
   def pieceCount
