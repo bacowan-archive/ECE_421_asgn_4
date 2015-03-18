@@ -5,7 +5,7 @@ class MockWinCondition
   def setWin(win)
     @win = win
   end
-  def isWin
+  def win
     return @win
   end
 end
