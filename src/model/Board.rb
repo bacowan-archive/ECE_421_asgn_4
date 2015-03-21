@@ -53,6 +53,18 @@ class Board
     return _firstEmptyRowOfColumn(index) ? true : false
   end
 
+  # display the board
+  def to_s
+    str = ''
+    @board.each { |row|
+      row.each {|col|
+        str += col.to_s + ' '
+      }
+      str += "\n"
+    }
+    return str
+  end
+
   # get the first empty row in the given column, or nil if there is none
   def _firstEmptyRowOfColumn(col)
     revVal = @board.reverse.find_index {|i| i[col] == 0}

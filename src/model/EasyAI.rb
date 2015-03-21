@@ -11,4 +11,5 @@ class EasyAI
     legalMoves = AI.getValidMoves(board)
     return legalMoves.sample
   end
+
 end

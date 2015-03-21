@@ -4,8 +4,7 @@ class ColumnController
     @game = game
   end
 
-  # place a piece in the game, at the column of the given index. If isAI
-  # is true, then the AI played the piece. Otherwise, a human did.
+  # place a piece in the game, at the column of the given index.
   def clickColumn(index)
     @game.placePiece(index)
   end

@@ -9,8 +9,8 @@ class AI
   end
 
   def notify(*args)
-    if args[0] == Game.CHANGE_TURN_FLAG and @id == args[1] # if it's the ai's turn, play the piece
-      @columnController.clickColumn(@logic.nextMove(args[2]))
+    if args[0] == Game.CHANGE_TURN_FLAG and @id == args[2] # if it's the ai's turn, play the piece
+      @columnController.clickColumn(@logic.nextMove(args[1]))
     end
   end
 
