@@ -6,6 +6,33 @@ class Board
     }
   end
 
+  def setBoard(board)
+    @board = board
+  end
+
+  def getBoard
+    return @board
+  end
+
+  def deep_copy
+    newBoard = Board.new([getHeight,getWidth])
+
+
+    newInternalBoard = (0..getHeight[0]-1).collect { |i|
+      (0..getWidth[1]-1).collect {0}
+    }
+
+    (0..getHeight-1).each {|i|
+      (0..getWidth-1).each {|j|
+        newInternalBoard[i,j] = @board[i,j]
+      }
+    }
+
+    newBoard.setBoard(newInternalBoard)
+
+    return newBoard
+  end
+
   # get the piece in a specific spot
   def [](x,y)
     begin

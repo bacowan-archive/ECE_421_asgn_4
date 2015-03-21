@@ -8,15 +8,14 @@ class MediumAI
   end
 
   def nextMove(board)
-     a = _lookAhead(board,1)[1]
-    puts a
-    return a
+     _lookAhead(board,3)[1]
   end
 
   def _lookAhead(board,nMoreTimes)
     options = AI.getValidMoves(board).collect {|col|
       _lookAheadOneMove(col,board,nMoreTimes,false)
     }
+    print options
     return _selectBestColumn(options)
   end
 
@@ -24,25 +23,29 @@ class MediumAI
   # look ahead in the game nMoreTimes turns. If the game can be won this turn, return the [true,winingColumn].
   # Otherwise, return [false,columnWithBestChances,NumberOfWinningMovesForThatColumn,NumberOfLosingMovesForThatColumn]
   def _lookAheadOneMove(col,board,nMoreTimes,opponent)
+
     # stopping condition
     if nMoreTimes < 1
       return [false,col,0,0]
     end
     # don't mess with the actual board
-    newBoard = board.clone
+    newBoard = board.deep_copy
     row = newBoard.put(opponent ? @otherId : @playerId,col)
+    if row == false
+      return [false,col,0,0]
+    end
 
     # if we will win or this turn
     winConditionMet = @winCondition.win(newBoard,row,col)
     if winConditionMet == @playerId
       return [true,col]
     elsif winConditionMet == @otherId
-      return [false,col,0,1]
+      return [false,col,opponent ? 0 : 1, opponent ? 1 : 0]
     end
 
     # otherwise, analyze the next turn's options
     options = AI.getValidMoves(newBoard).collect {|col|
-      _lookAheadOneMove(col,board,nMoreTimes-1,!opponent)
+      _lookAheadOneMove(col,newBoard,nMoreTimes-1,!opponent)
     }
 
     return _selectBestColumn(options)
@@ -59,6 +62,12 @@ class MediumAI
         best = o
       end
     }
+
+    # if there are multiple equally as good options, randomly select one
+    options.select {|o| o[2]-o[3] == best[2]-best[3]}
+    if options.length > 1
+      best = options.sample
+    end
 
     totalWinningMoves = options.transpose[2].inject(:+)
     totalLosingMoves = options.transpose[3].inject(:+)
