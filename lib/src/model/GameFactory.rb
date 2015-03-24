@@ -1,6 +1,6 @@
 require_relative 'OttoTootWinCondition'
 require_relative 'ConnectFourWinCondition'
-
+require_relative 'Game'
 
 class GameFactory
 

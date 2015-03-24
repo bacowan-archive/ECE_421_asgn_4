@@ -6,15 +6,17 @@ require_relative '../model/OttoTootWinCondition.rb'
 
 class GameBoard
 	def initialize(choices)
-	
-	if choices[0] = "Connect4"
+	@win = 0
+	if choices[0] == "Connect4"
 		gameType = ConnectFourWinCondition.name
-		@image_map = {0=>"Empty_Grid.png", 1=>"Red_Grid.png", 2=>"Black_Grid.png"}
+		@image_map = {0=>"./lib/src/view/Empty_Grid.png",
+				 "Red"=>"./lib/src/view/Red_Grid.png",
+				 "Yellow"=>"./lib/src/view/Yellow_Grid.png"}
 		player1Piece = "Red"
-		player2Piece = "Black"
+		player2Piece = "Yellow"
 	else
 		gameType = OttoTootWinCondition.name
-		@image_map = {0=>"Empty_Grid.png", 1=>"O_Grid.png", 2=>"T_Grid.png"}
+		@image_map = {0=>"./lib/src/view/Empty_Grid.png", "O"=>"./lib/src/view/O_Grid.png", "T"=>"./lib/src/view/T_Grid.png"}
 		player1Piece = "O"
 		player2Piece = "T"
 	end
@@ -34,12 +36,14 @@ class GameBoard
 	end
 	
 	dimensions = [6,7]
-	@game = GameFactory.new.createGame(gameType, player1AI, player2AI, player1Piece, player2Piece, dimensions)
+	@game = GameFactory.new.createGame(gameType, player1Piece, player2Piece, dimensions)
+        @game.addObserver(self)
 	@columnController = ColumnController.new(@game)
+
 
   Gtk.init
     @builder = Gtk::Builder::new
-    @builder.add_from_file("Game_Screen.glade")
+    @builder.add_from_file("./lib/src/view/Game_Screen.glade")
 	
     
 	
@@ -53,7 +57,7 @@ class GameBoard
 
 
 # Setup default Images for the board. So a Fresh Empty Game.
-(1..42).each{|i| @builder.get_object("image"+i.to_s).set("Empty_Grid.png")}
+(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[0])}
 
 # Setup the Info Bar
 	@builder.get_object("label1").text = "Let's Play"
@@ -64,6 +68,7 @@ class GameBoard
 # Setup Clickable Images
 (1..7).each{|i| @builder.get_object("eventbox" + i.to_s).signal_connect("button_press_event"){play_move(i)}}
 
+@columnController.gameReady
 
 window.show()
     Gtk.main()
@@ -79,7 +84,8 @@ def notify(*args)
 	
 		#Update the Board View
 		state_array = Array.new
-		board.each{|row| row.each{|element| state_array << element}}
+		board.getBoard.each{|row| row.each{|element| state_array << element}}
+		
 		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
 		
 		# Play Continues	
@@ -87,8 +93,17 @@ def notify(*args)
 	
 	elsif(flags_map[args[0]] == 1) 
 		# Declare the Winner in the Info box up top
-		message = args[1]
+		board = args[1]
+		message = args[2]
+
+		#Update the Board View
+		state_array = Array.new
+		board.getBoard.each{|row| row.each{|element| state_array << element}}
+
+		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+
 		@builder.get_object("label1").text = message + " wins!"
+		@win = 1
 	elsif(flags_map[args[0]] == 2)
 		#Stalemate Tell the Info Box
 		@builder.get_object("label1").text = "Stalemate!"
@@ -102,7 +117,11 @@ def notify(*args)
 end
 
 def play_move(col)
-	@columnController.clickColumn(col)
+	if @win == 0
+		@columnController.clickColumn(col-1)
+	else
+		a=1
+	end
 end
 
 	
