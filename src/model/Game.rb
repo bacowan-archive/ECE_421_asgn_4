@@ -57,7 +57,7 @@ class Game
         if win
           _notifyObservers(Game.WIN_FLAG,@board,win)
         elsif @board.full
-          _notifyObservers(Game.STALEMATE_FLAG)
+          _notifyObservers(Game.STALEMATE_FLAG,@board)
         else
           _changeTurn
           _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
