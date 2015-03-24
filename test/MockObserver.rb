@@ -5,8 +5,10 @@ class MockObserver
   end
 
   def notify(*args)
-    @notifications.concat(args)
-    b = 1
+    if args[0] == Game.UNKNOWN_EXCEPTION
+      raise args[1]
+    end
+    @notifications.concat([args])
   end
 
   def lastNotification

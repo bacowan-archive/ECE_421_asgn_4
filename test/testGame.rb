@@ -7,17 +7,13 @@ require 'test/unit'
 class TestGame < Test::Unit::TestCase
 
   def setup
-    @player1 = 0
-    @player2 = 1
-    pieces = Hash.new
-    @player1Piece = MockPiece.new('x')
-    @player2Piece = MockPiece.new('y')
-    pieces[@player1] = @player1Piece
-    pieces[@player2] = @player2Piece
+    @player1 = 1
+    @player2 = 2
+    @players = [@player1,@player2]
     @winCondition = MockWinCondition.new
     @xSize = 7
     @ySize = 6
-    @game = Game.new(pieces,@winCondition,[@ySize,@xSize])
+    @game = Game.new(@players,@winCondition,[@ySize,@xSize])
     @observer = MockObserver.new
     @game.addObserver(@observer)
   end
@@ -31,23 +27,23 @@ class TestGame < Test::Unit::TestCase
     assert_equal(@game.board.pieceCount,0,"game does not start with zero pieces.")
     @game.placePiece(0)
     assert_equal(@game.board.pieceCount,1,"new game piece not added")
-    assert_equal(@game.board[-1,0], @player1Piece, "correct piece not added in the correct spot")
+    assert_equal(@game.board[-1,0], @player1, "correct piece not added in the correct spot")
     @game.placePiece(2)
     assert_equal(@game.board.pieceCount,2,"new game piece not added")
-    assert_equal(@game.board[-1,2], @player2Piece, "correct piece not added in the correct spot")
+    assert_equal(@game.board[-1,2], @player2, "correct piece not added in the correct spot")
   end
 
   # test that the "Place" function stacks tiles when more than one are added in the same column
   def testPlaceStack
     @game.placePiece(0)
     assert_equal(@game.board.pieceCount,1,"new game piece not added")
-    assert_equal(@game.board[-1,0], @player1Piece, "correct piece not added in the correct spot")
+    assert_equal(@game.board[-1,0], @player1, "correct piece not added in the correct spot")
     @game.placePiece(0)
     assert_equal(@game.board.pieceCount,2,"new game piece not added")
-    assert_equal(@game.board[-2,0], @player2Piece, "correct piece not added in the correct spot")
+    assert_equal(@game.board[-2,0], @player2, "correct piece not added in the correct spot")
     @game.placePiece(0)
     assert_equal(@game.board.pieceCount,3,"new game piece not added")
-    assert_equal(@game.board[-3,0], @player1Piece, "correct piece not added in the correct spot")
+    assert_equal(@game.board[-3,0], @player1, "correct piece not added in the correct spot")
   end
 
   # test that if a piece is placed on a full column, the turn remains the same, and a notification is sent
@@ -83,8 +79,8 @@ class TestGame < Test::Unit::TestCase
   def testWin
     @winCondition.setWin(@player1)
     @game.placePiece(0)
-    assert_equal(@observer.notifications[-2][1], @game.board, 'correct board not sent in notification')
     assert_equal(@observer.notifications[-1][0], Game.WIN_FLAG, 'win condition not sent in notification')
-    assert_equal(@observer.notifications[-1][1], @player1, 'correct player not sent in win notification')
+    assert_equal(@observer.notifications[-1][1], @game.board, 'correct board not sent in notification')
+    assert_equal(@observer.notifications[-1][2], @player1, 'correct player not sent in win notification')
   end
 end

@@ -7,7 +7,7 @@ class CommandLineInterface
   VALID_GAMES = [ConnectFourWinCondition.name,OttoTootWinCondition.name]
   PLAYERS = ['1','2']
   AI_LEVELS = ['1','2','3']
-  GAME_DIMENSIONS = [4,4]
+  GAME_DIMENSIONS = [6,7]
 
   def initialize
 
