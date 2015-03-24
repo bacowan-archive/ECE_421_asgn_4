@@ -6,6 +6,6 @@ s.summary = "Play some games!"
 s.description = "Project for Class"
 s.authors = ["Brendan Cowan","Ryan Kusters"]
 s.email = 'kusters@ualberta.ca'
-s.files = ['lib/scr/model/*.rb','lib/scr/view/*.rb','lib/scr/controller/*.rb']
+s.files = Dir.glob("lib/**/*") + 'lib/src/Board_Games.rb'
 s.homepage = 'https://github.com/RyanKusters/ECE_421_asgn_4'
 end

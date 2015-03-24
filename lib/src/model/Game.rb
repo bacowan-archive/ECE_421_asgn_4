@@ -3,6 +3,8 @@ require_relative 'Board'
 # overall state of the game
 class Game
 
+  # TODO: error catching needs to be thrown in another notification
+
   def Game.CHANGE_TURN_FLAG
     'CHANGE_TURN'
   end
@@ -16,13 +18,14 @@ class Game
     'COLUMN_FULL'
   end
 
-  def initialize(pieces, winCondition, dimensions)
-    @pieces = pieces
-    @players = pieces.keys
+  def initialize(players, winCondition, dimensions)
+    @players = players
     @playerIndex = 0
     @winCondition = winCondition
     @board = Board.new(dimensions)
     @observers = []
+    @aiObservers = [] # these need to be separate from the observers, as they are unique, and shouldn't
+                      # know about the board state before the board does
   end
 
   def board
@@ -34,6 +37,11 @@ class Game
     @observers << observer
   end
 
+  # add an observer for when the state of the game changes
+  def addAIObserver(observer)
+    @aiObservers << observer
+  end
+
   # get the player whose turn it currently is
   def turn
     return @players[@playerIndex]
@@ -41,20 +49,37 @@ class Game
 
   # place a piece in the given column
   def placePiece(column)
-    newPieceRow = @board.put(@pieces[turn],column)
+    newPieceRow = @board.put(turn,column)
     if newPieceRow
-      _changeTurn
-      _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
       win = @winCondition.win(@board,newPieceRow,column)
       if win
-        _notifyObservers(Game.WIN_FLAG,win)
+        _notifyObservers(Game.WIN_FLAG,@board,win)
       elsif @board.full
         _notifyObservers(Game.STALEMATE_FLAG)
+      else
+        _changeTurn
+        _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
       end
     else
       _notifyObservers(Game.COLUMN_FULL_FLAG)
     end
   end
+
+  # return the name of the game being played
+  def gameName
+    return @winCondition.class.name
+  end
+
+  # get the win condition of the game
+  def winCondition
+    return @winCondition
+  end
+
+  # send an initial notification (same as the turn notifications)
+  def sendInitialNotification
+    _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
+  end
+
 
   def _changeTurn
     @playerIndex += 1
@@ -64,7 +89,8 @@ class Game
   end
 
   def _notifyObservers(*args)
-    @observers.each {|o| o.notify(args)}
+    @observers.each {|o| o.notify(*args)}
+    @aiObservers.each {|o| o.notify(*args)}
   end
 
 end
