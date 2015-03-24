@@ -1,6 +1,11 @@
 # this AI looks ahead 3 turns to see if it can win
 class MediumAI
 
+  LOOK_AHEAD_COUNT = 6 # the number of turns the ai is able to look ahead
+  WIN_TOKEN = 'win'
+  LOSE_TOKEN = 'lose'
+  NEITHER_TOKEN = 'neither'
+
   def initialize(id,otherId,winCondition)
     @playerId = id
     @otherId = otherId
@@ -8,17 +13,15 @@ class MediumAI
   end
 
   def nextMove(board)
-     _lookAhead(board,3)[1]
+     _lookAhead(board,LOOK_AHEAD_COUNT)[1]
   end
 
   def _lookAhead(board,nMoreTimes)
     options = AI.getValidMoves(board).collect {|col|
       _lookAheadOneMove(col,board,nMoreTimes,false)
     }
-    print options
     return _selectBestColumn(options)
   end
-
 
   # look ahead in the game nMoreTimes turns. If the game can be won this turn, return the [true,winingColumn].
   # Otherwise, return [false,columnWithBestChances,NumberOfWinningMovesForThatColumn,NumberOfLosingMovesForThatColumn]
@@ -26,64 +29,70 @@ class MediumAI
 
     # stopping condition
     if nMoreTimes < 1
-      return [false,col,0,0]
+      return [NEITHER_TOKEN,col,0,0]
     end
     # don't mess with the actual board
     newBoard = board.deep_copy
     row = newBoard.put(opponent ? @otherId : @playerId,col)
     if row == false
-      return [false,col,0,0]
+      return [NEITHER_TOKEN,col,0,0]
     end
 
-    # if we will win or this turn
+    # if we will win or lose this turn
     winConditionMet = @winCondition.win(newBoard,row,col)
     if winConditionMet == @playerId
-      return [true,col]
+      return [WIN_TOKEN,col,opponent ? 1 : 0, opponent ? 0 : 1]
     elsif winConditionMet == @otherId
-      return [false,col,opponent ? 0 : 1, opponent ? 1 : 0]
+      return [LOSE_TOKEN,col,opponent ? 0 : 1, opponent ? 1 : 0]
     end
 
     # otherwise, analyze the next turn's options
-    options = AI.getValidMoves(newBoard).collect {|col|
-      _lookAheadOneMove(col,newBoard,nMoreTimes-1,!opponent)
+    options = AI.getValidMoves(newBoard).collect {|nextCol|
+      _lookAheadOneMove(nextCol,newBoard,nMoreTimes-1,!opponent)
     }
 
-    return _selectBestColumn(options)
+    if opponent
+      return _selectBestColumn(options)
+    end
+
+    return _selectWorstColumn(options)
 
   end
 
   def _selectBestColumn(options)
+    return _selectAColumn(options,WIN_TOKEN,LOSE_TOKEN)
+  end
+
+  def _selectWorstColumn(options)
+    return _selectAColumn(options,LOSE_TOKEN,WIN_TOKEN)
+  end
+
+  def _selectAColumn(options,win,lose)
     best = nil
     options.each {|o|
-      if o[0] == true
-        return [true,o[1]]
-      end
-      if best == nil or o[2]-o[3] > best[1]
+      if best == nil
         best = o
+      elsif o[0] == win
+        best = o
+      elsif o[0] == lose and best[0] != win
+        best = o
+      elsif o[0] == NEITHER_TOKEN
+        if best[0] == NEITHER_TOKEN and o[2]-o[3] > best[2]-best[3]
+          best = o
+        end
       end
     }
 
     # if there are multiple equally as good options, randomly select one
-    options.select {|o| o[2]-o[3] == best[2]-best[3]}
-    if options.length > 1
-      best = options.sample
+    bestOptions = options.select {|o| o[0] == best[0] and o[2]-o[3] == best[2]-best[3]}
+    if bestOptions.length > 1
+      best = bestOptions.sample
     end
-
     totalWinningMoves = options.transpose[2].inject(:+)
     totalLosingMoves = options.transpose[3].inject(:+)
 
-    return [false,best[1],totalWinningMoves,totalLosingMoves]
+
+    return [best[0],best[1],totalWinningMoves,totalLosingMoves]
   end
-
-
-
-
-
-
-
-
-
-
-
 
 end
