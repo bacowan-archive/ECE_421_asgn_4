@@ -24,13 +24,14 @@ class IngameCommandLineInterface
     # continuously get input from the user
     continue = true
     commands = _initializeCommands
+    @gameController.gameReady
     while continue and not @win
       fullCommand = _parseCommand(_getCommand)
       if commands.has_key? fullCommand[0]
         begin
           continue = commands[fullCommand[0]].call(*fullCommand[1..-1])
-        #rescue ArgumentError
-        #  puts 'wrong number of arguments'
+        rescue ArgumentError
+          puts 'wrong number of arguments'
         end
       elsif fullCommand.length != 0
         continue = fullCommand[0] + ' is not a valid command'
@@ -96,7 +97,7 @@ class IngameCommandLineInterface
   end
 
   def _helpCommand
-    return 'todo: write the help'
+    return "Commands:\nexit: exit the current game\ndisplay: display the game board\nturn: display whose turn it currently is\nput <column>: place a piece in a column\nhelp: display this help message"
   end
 
   # do this whenever the game state changes
@@ -107,12 +108,14 @@ class IngameCommandLineInterface
       puts @boardState.to_s
       puts 'player ' + @currentTurn.to_s + '\'s turn'
     elsif args[0] == Game.WIN_FLAG
-      puts 'player ' + args[1] + ' wins'
+      puts @boardState.to_s
+      puts 'player ' + args[2] + ' wins'
       @win = true
     elsif args[0] == Game.STALEMATE_FLAG
       puts 'stalemate'
+      @win = true
     elsif args[0] == Game.COLUMN_FULL_FLAG
-      puts 'that column is full.'
+      puts 'that column is full or does not exist.'
     end
   end
 

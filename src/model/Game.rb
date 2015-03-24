@@ -3,6 +3,8 @@ require_relative 'Board'
 # overall state of the game
 class Game
 
+  # TODO: error catching needs to be thrown in another notification
+
   def Game.CHANGE_TURN_FLAG
     'CHANGE_TURN'
   end
@@ -49,13 +51,14 @@ class Game
   def placePiece(column)
     newPieceRow = @board.put(turn,column)
     if newPieceRow
-      _changeTurn
-      _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
       win = @winCondition.win(@board,newPieceRow,column)
       if win
-        _notifyObservers(Game.WIN_FLAG,win)
+        _notifyObservers(Game.WIN_FLAG,@board,win)
       elsif @board.full
         _notifyObservers(Game.STALEMATE_FLAG)
+      else
+        _changeTurn
+        _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
       end
     else
       _notifyObservers(Game.COLUMN_FULL_FLAG)
@@ -71,6 +74,12 @@ class Game
   def winCondition
     return @winCondition
   end
+
+  # send an initial notification (same as the turn notifications)
+  def sendInitialNotification
+    _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
+  end
+
 
   def _changeTurn
     @playerIndex += 1

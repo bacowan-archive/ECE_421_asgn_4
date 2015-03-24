@@ -1,19 +1,20 @@
 # this AI looks ahead 3 turns to see if it can win
-class MediumAI
+class AILogic
 
   LOOK_AHEAD_COUNT = 6 # the number of turns the ai is able to look ahead
   WIN_TOKEN = 'win'
   LOSE_TOKEN = 'lose'
   NEITHER_TOKEN = 'neither'
 
-  def initialize(id,otherId,winCondition)
+  def initialize(id,otherId,winCondition,lookAheadCount)
     @playerId = id
     @otherId = otherId
     @winCondition = winCondition
+    @lookAheadCount = lookAheadCount
   end
 
   def nextMove(board)
-     _lookAhead(board,LOOK_AHEAD_COUNT)[1]
+     _lookAhead(board,@lookAheadCount)[1]
   end
 
   def _lookAhead(board,nMoreTimes)
@@ -73,8 +74,6 @@ class MediumAI
       if best == nil
         best = o
       elsif o[0] == win
-        best = o
-      elsif o[0] == lose and best[0] != win
         best = o
       elsif o[0] == NEITHER_TOKEN
         if best[0] == NEITHER_TOKEN and o[2]-o[3] > best[2]-best[3]

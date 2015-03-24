@@ -9,4 +9,8 @@ class ColumnController
     @game.placePiece(index)
   end
 
+  def gameReady
+    @game.sendInitialNotification
+  end
+
 end

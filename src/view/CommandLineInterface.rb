@@ -1,6 +1,5 @@
 require_relative '../model/ConnectFourWinCondition'
 require_relative '../model/OttoTootWinCondition'
-require_relative '../model/EasyAI'
 require_relative 'IngameCommandLineInterface'
 
 class CommandLineInterface
@@ -8,6 +7,7 @@ class CommandLineInterface
   VALID_GAMES = [ConnectFourWinCondition.name,OttoTootWinCondition.name]
   PLAYERS = ['1','2']
   AI_LEVELS = ['1','2','3']
+  GAME_DIMENSIONS = [4,4]
 
   def initialize
 
@@ -29,8 +29,8 @@ class CommandLineInterface
       if commands.has_key? fullCommand[0]
         begin
           continue = commands[fullCommand[0]].call(*fullCommand[1..-1])
-        #rescue ArgumentError
-        #  puts 'wrong number of arguments'
+        rescue ArgumentError
+          puts 'wrong number of arguments'
         end
       else
         continue = fullCommand[0] + ' is not a valid command'
@@ -110,7 +110,7 @@ class CommandLineInterface
       return level + ' is not a valid ai level'
     end
 
-    @players[player]['aiLevel'] = player.to_i
+    @players[player]['aiLevel'] = level.to_i
     true
 
   end
@@ -130,7 +130,7 @@ class CommandLineInterface
       p2Ai = @players['2']['aiLevel']
     end
 
-    game = IngameCommandLineInterface.new(@game,p1Ai,p2Ai,'1','2',[6,7])
+    game = IngameCommandLineInterface.new(@game,p1Ai,p2Ai,'1','2',GAME_DIMENSIONS)
     game.start
     puts 'game has finished'
     true
@@ -138,7 +138,7 @@ class CommandLineInterface
 
   # display a message with the valid commands
   def _helpCommand
-    return "Commands:\nexit: exit the program\ngame <name of game>: choose the game to play\nplayer <id> <\"ai\" or \"human\">: set player \"id\" to be either a human or computer player\nai <id> <1 2 or 3>: set the AI of player \"id\"\nstart: start the game"
+    return "Commands:\nexit: exit the program\ngame <name of game>: choose the game to play (OTTO_TOOT or CONNECT_FOUR)\nplayer <id> <\"ai\" or \"human\">: set player \"id\" to be either a human or computer player\nai <id> <1 2 or 3>: set the AI of player \"id\"\nstart: start the game"
   end
 
 end

@@ -1,5 +1,4 @@
-require_relative 'EasyAI'
-require_relative 'MediumAI'
+require_relative 'AILogic'
 require_relative 'AI'
 
 class AIFactory
@@ -12,14 +11,16 @@ class AIFactory
     end
 
     if aiLevel == 1
-      ai = AI.new(EasyAI.new(player,winCondition),player,columnController)
+      logic = AILogic.new(player,opponent,winCondition,0)
     elsif aiLevel == 2
-      ai = AI.new(MediumAI.new(player,opponent,winCondition),player,columnController)
+      logic = AILogic.new(player,opponent,winCondition,2)
     elsif aiLevel == 3
-      ai = AI.new(EasyAI.new(player,winCondition),player,columnController)
+      logic = AILogic.new(player,opponent,winCondition,6)
     else
       return false
     end
+
+    ai = AI.new(logic,player,columnController)
 
     # make sure the ais know what's going on in the game
     game.addAIObserver(ai)
