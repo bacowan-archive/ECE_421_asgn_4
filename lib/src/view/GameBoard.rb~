@@ -3,6 +3,7 @@ require_relative '../model/GameFactory.rb'
 require_relative '../controller/ColumnController.rb'
 require_relative '../model/ConnectFourWinCondition.rb'
 require_relative '../model/OttoTootWinCondition.rb'
+require_relative '../model/AIFactory.rb'
 
 class GameBoard
 	def initialize(choices)
@@ -16,7 +17,7 @@ class GameBoard
 		player2Piece = "Yellow"
 	else
 		gameType = OttoTootWinCondition.name
-		@image_map = {0=>"./lib/src/view/Empty_Grid.png", 1=>"./lib/src/view/O_Grid.png", 2=>"./lib/src/view/T_Grid.png"}
+		@image_map = {0=>"./lib/src/view/Empty_Grid.png", "O"=>"./lib/src/view/O_Grid.png", "T"=>"./lib/src/view/T_Grid.png"}
 		player1Piece = "O"
 		player2Piece = "T"
 	end
@@ -39,6 +40,12 @@ class GameBoard
 	@game = GameFactory.new.createGame(gameType, player1Piece, player2Piece, dimensions)
         @game.addObserver(self)
 	@columnController = ColumnController.new(@game)
+
+	aiFactory = AIFactory.new
+	aiFactory.createAI(player1AI,@game.winCondition,player1Piece,player2Piece,@columnController,@game)
+	aiFactory.createAI(player2AI,@game.winCondition,player2Piece,player1Piece,@columnController,@game)
+	
+
 
 
   Gtk.init
@@ -75,7 +82,7 @@ window.show()
 	end
 
 def notify(*args)
-	flags_map = {'CHANGE_TURN'=>0, 'WIN'=>1, 'STALEMATE'=>2, 'COLUMN_FULL'=>3}
+	flags_map = {'CHANGE_TURN'=>0, 'WIN'=>1, 'STALEMATE'=>2, 'COLUMN_FULL'=>3, 'UNKNOWN_EXCEPTION'=>4 }
 
 	if(flags_map[args[0]] == 0)
 
@@ -111,7 +118,10 @@ def notify(*args)
 		#Column is full, Tell the player to pick another column
 		@builder.get_object("label1").text = "Column Full. Try a different spot."
 	else
-		# Something has gone horribly wrong	
+		# Something has gone horribly wrong
+		popup = Gtk::MessageDialog.new(self,:modal,:error,:close,"An unknown error has occured. Program exit.")
+		popup.run
+		popup.destroy	
 	end
 	
 end

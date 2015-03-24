@@ -3,6 +3,7 @@ require_relative '../model/GameFactory.rb'
 require_relative '../controller/ColumnController.rb'
 require_relative '../model/ConnectFourWinCondition.rb'
 require_relative '../model/OttoTootWinCondition.rb'
+require_relative '../model/AIFactory.rb'
 
 class GameBoard
 	def initialize(choices)
@@ -40,6 +41,12 @@ class GameBoard
         @game.addObserver(self)
 	@columnController = ColumnController.new(@game)
 
+	aiFactory = AIFactory.new
+	aiFactory.createAI(player1AI,@game.winCondition,player1Piece,player2Piece,@columnController,@game)
+	aiFactory.createAI(player2AI,@game.winCondition,player2Piece,player1Piece,@columnController,@game)
+	
+
+
 
   Gtk.init
     @builder = Gtk::Builder::new
@@ -75,7 +82,7 @@ window.show()
 	end
 
 def notify(*args)
-	flags_map = {'CHANGE_TURN'=>0, 'WIN'=>1, 'STALEMATE'=>2, 'COLUMN_FULL'=>3}
+	flags_map = {'CHANGE_TURN'=>0, 'WIN'=>1, 'STALEMATE'=>2, 'COLUMN_FULL'=>3, 'UNKNOWN_EXCEPTION'=>4 }
 
 	if(flags_map[args[0]] == 0)
 
@@ -105,13 +112,23 @@ def notify(*args)
 		@builder.get_object("label1").text = message + " wins!"
 		@win = 1
 	elsif(flags_map[args[0]] == 2)
+		board = args[1]
 		#Stalemate Tell the Info Box
+		#Update the Board View
+		state_array = Array.new
+		board.getBoard.each{|row| row.each{|element| state_array << element}}
+
+		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+
 		@builder.get_object("label1").text = "Stalemate!"
 	elsif(flags_map[args[0]] == 3)
 		#Column is full, Tell the player to pick another column
 		@builder.get_object("label1").text = "Column Full. Try a different spot."
 	else
-		# Something has gone horribly wrong	
+		# Something has gone horribly wrong
+		popup = Gtk::MessageDialog.new(self,:modal,:error,:close,"An unknown error has occured. Program exit.")
+		popup.run
+		popup.destroy	
 	end
 	
 end

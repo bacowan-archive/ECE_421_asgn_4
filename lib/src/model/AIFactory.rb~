@@ -15,7 +15,7 @@ class AIFactory
     elsif aiLevel == 2
       logic = AILogic.new(player,opponent,winCondition,2)
     elsif aiLevel == 3
-      logic = AILogic.new(player,opponent,winCondition,4)
+      logic = AILogic.new(player,opponent,winCondition,6)
     else
       return false
     end
