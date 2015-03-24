@@ -1,6 +1,6 @@
 require_relative 'OttoTootWinCondition'
 require_relative 'ConnectFourWinCondition'
-
+require_relative 'Game'
 
 class GameFactory
 
@@ -15,12 +15,10 @@ class GameFactory
     if gameType == OttoTootWinCondition.name
       winCondition = OttoTootWinCondition.new(player1,player2)
     elsif gameType == ConnectFourWinCondition.name
-      winCondition = ConnectFourWinCondition.new#(player1,player2)
+      winCondition = ConnectFourWinCondition.new
     end
 
     game = Game.new(pieces,winCondition,dimensions)
-
-
 
     return game
 

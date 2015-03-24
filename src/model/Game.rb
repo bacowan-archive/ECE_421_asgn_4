@@ -3,8 +3,6 @@ require_relative 'Board'
 # overall state of the game
 class Game
 
-  # TODO: error catching needs to be thrown in another notification
-
   def Game.CHANGE_TURN_FLAG
     'CHANGE_TURN'
   end
@@ -16,6 +14,9 @@ class Game
   end
   def Game.COLUMN_FULL_FLAG
     'COLUMN_FULL'
+  end
+  def Game.UNKNOWN_EXCEPTION
+    'UNKNOWN_EXCEPTION'
   end
 
   def initialize(players, winCondition, dimensions)
@@ -49,20 +50,25 @@ class Game
 
   # place a piece in the given column
   def placePiece(column)
-    newPieceRow = @board.put(turn,column)
-    if newPieceRow
-      win = @winCondition.win(@board,newPieceRow,column)
-      if win
-        _notifyObservers(Game.WIN_FLAG,@board,win)
-      elsif @board.full
-        _notifyObservers(Game.STALEMATE_FLAG)
+    begin
+      newPieceRow = @board.put(turn,column)
+      if newPieceRow
+        win = @winCondition.win(@board,newPieceRow,column)
+        if win
+          _notifyObservers(Game.WIN_FLAG,@board,win)
+        elsif @board.full
+          _notifyObservers(Game.STALEMATE_FLAG)
+        else
+          _changeTurn
+          _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
+        end
       else
-        _changeTurn
-        _notifyObservers(Game.CHANGE_TURN_FLAG,@board,turn)
+        _notifyObservers(Game.COLUMN_FULL_FLAG)
       end
-    else
-      _notifyObservers(Game.COLUMN_FULL_FLAG)
+    rescue Exception => e
+      _notifyObservers(Game.UNKNOWN_EXCEPTION, e)
     end
+
   end
 
   # return the name of the game being played
