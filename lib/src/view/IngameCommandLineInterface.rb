@@ -116,6 +116,9 @@ class IngameCommandLineInterface
       @win = true
     elsif args[0] == Game.COLUMN_FULL_FLAG
       puts 'that column is full or does not exist.'
+    elsif args[0] == Game.UNKNOWN_EXCEPTION
+      puts 'uh-oh, something broke. Sorry, the game will end.'
+      @win = true
     end
   end
 

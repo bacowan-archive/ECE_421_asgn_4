@@ -1,13 +1,15 @@
 require_relative '../src/model/OttoTootWinCondition'
 require_relative '../src/model/Board'
+require_relative '../src/model/WinCondition'
 require 'test/unit'
 
 class TestOttoTootWinCondition < Test::Unit::TestCase
 
   def setup
-    @T = 't'
+    @X = 't'
     @o = 'o' # the players' pieces. picked X and o so that it is easier to see when there are many in a small space
-    @winCondition = OttoTootWinCondition.new(@T,@o)
+    winLogic = OttoTootWinCondition.new
+    @winCondition = WinCondition.new(@X,@o,winLogic)
     @xSize = 7
     @ySize = 6
     @board = Board.new([@ySize,@xSize])
@@ -19,76 +21,76 @@ class TestOttoTootWinCondition < Test::Unit::TestCase
 
   # the first played piece cannot be a win
   def testBlank
-    putPieces(@T)
+    putPieces(@X)
     assert(!@winCondition.win(@board,@ySize-1,0))
   end
 
   # a full board with no rows of four is not a win
   def testFull
-    putPieces(@T,@o,@T,@o,@T,@o,@T)
-    putPieces(@o,@T,@o,@T,@o,@T,@o)
-    putPieces(@T,@o,@T,@o,@T,@o,@T)
-    putPieces(@o,@T,@o,@T,@o,@T,@o)
-    putPieces(@T,@o,@T,@o,@T,@o,@T)
-    putPieces(@o,@T,@o,@T,@o,@T,@o)
+    putPieces(@X,@o,@X,@o,@X,@o,@X)
+    putPieces(@o,@X,@o,@X,@o,@X,@o)
+    putPieces(@X,@o,@X,@o,@X,@o,@X)
+    putPieces(@o,@X,@o,@X,@o,@X,@o)
+    putPieces(@X,@o,@X,@o,@X,@o,@X)
+    putPieces(@o,@X,@o,@X,@o,@X,@o)
     assert(!@winCondition.win(@board,@ySize-1,0))
   end
 
   # a full board when the last piece placed is a win
   def testFullWin
-    putPieces(@T,@o,@T,@o,@T,@o,@T)
-    putPieces(@o,@T,@o,@T,@o,@T,@o)
-    putPieces(@T,@o,@T,@o,@T,@o,@T)
-    putPieces(@o,@T,@o,@T,@o,@T,@o)
-    putPieces(@T,@o,@T,@o,@T,@o,@o)
-    putPieces(@o,@T,@o,@T,@o,@T,@T)
-    assert_equal(@winCondition.win(@board,0,@xSize-1),@T)
+    putPieces(@X,@o,@X,@o,@X,@o,@X)
+    putPieces(@o,@X,@o,@X,@o,@X,@o)
+    putPieces(@X,@o,@X,@o,@X,@o,@X)
+    putPieces(@o,@X,@o,@X,@o,@X,@o)
+    putPieces(@X,@o,@X,@o,@X,@o,@o)
+    putPieces(@o,@X,@o,@X,@o,@X,@X)
+    assert_equal(@winCondition.win(@board,0,@xSize-1),@X)
   end
 
   # four vertical of player 1 is a win for player 1
   def testP1WinVertical
-    putPieces(@T)
+    putPieces(@X)
     putPieces(@o)
     putPieces(@o)
-    putPieces(@T)
-    assert_equal(@winCondition.win(@board,@ySize-4,0),@T)
+    putPieces(@X)
+    assert_equal(@winCondition.win(@board,@ySize-4,0),@X)
   end
 
   # four vertical of player 2 is a win for player 2
   def testP2WinVertical
     putPieces(@o)
-    putPieces(@T)
-    putPieces(@T)
+    putPieces(@X)
+    putPieces(@X)
     putPieces(@o)
     assert_equal(@winCondition.win(@board,@ySize-4,0),@o)
   end
 
   # four horizontal of player 1 is a win for player 1
   def testP1WinHorizontal
-    putPieces(@T,@o,@o,@T)
-    assert_equal(@winCondition.win(@board,@ySize-1,3),@T)
+    putPieces(@X,@o,@o,@X)
+    assert_equal(@winCondition.win(@board,@ySize-1,3),@X)
   end
 
   # four vertical of player 2 is a win for player 2
   def testP2WinHorizontal
-    putPieces(@o,@T,@T,@o)
+    putPieces(@o,@X,@X,@o)
     assert_equal(@winCondition.win(@board,@ySize-1,3),@o)
   end
 
   # four diagonal of player 1 is a win for player 1
   def testP1WinDiagonal
-    putPieces(@o,@o,@o,@T)
+    putPieces(@o,@o,@o,@X)
     putPieces(@o,@o,@o,@o)
     putPieces(@o,@o,@o,@o)
-    putPieces(@T,@o,@o,@o)
-    assert_equal(@winCondition.win(@board,@ySize-4,0),@T)
+    putPieces(@X,@o,@o,@o)
+    assert_equal(@winCondition.win(@board,@ySize-4,0),@X)
   end
 
   # four diagonal of player 2 is a win for player 2
   def testP2WinDiagonal
     putPieces(@o,@o,@o,@o)
-    putPieces(@o,@o,@T,@o)
-    putPieces(@o,@T,@o,@o)
+    putPieces(@o,@o,@X,@o)
+    putPieces(@o,@X,@o,@o)
     putPieces(@o,@o,@o,@o)
     assert_equal(@winCondition.win(@board,@ySize-4,0),@o)
   end

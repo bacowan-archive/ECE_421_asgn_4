@@ -1,5 +1,9 @@
 require_relative 'OttoTootWinCondition'
 require_relative 'ConnectFourWinCondition'
+<<<<<<< HEAD:lib/src/model/GameFactory.rb~
+=======
+require_relative 'WinCondition'
+>>>>>>> ec50a84018670d128efd2c8353c880dfa56017fa:src/model/GameFactory.rb
 require_relative 'Game'
 
 class GameFactory
@@ -13,14 +17,14 @@ class GameFactory
     pieces = [player1,player2]
 
     if gameType == OttoTootWinCondition.name
-      winCondition = OttoTootWinCondition.new(player1,player2)
+      logic = OttoTootWinCondition.new
+      winCondition = WinCondition.new(player1,player2,logic)
     elsif gameType == ConnectFourWinCondition.name
-      winCondition = ConnectFourWinCondition.new#(player1,player2)
+      logic = ConnectFourWinCondition.new
+      winCondition = WinCondition.new(player1,player2,logic)
     end
 
     game = Game.new(pieces,winCondition,dimensions)
-
-
 
     return game
 

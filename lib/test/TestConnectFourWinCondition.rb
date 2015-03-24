@@ -1,4 +1,5 @@
 require_relative '../src/model/ConnectFourWinCondition'
+require_relative '../src/model/WinCondition'
 require_relative '../src/model/Board'
 require 'test/unit'
 
@@ -7,7 +8,8 @@ class TestConnectFourWinCondition < Test::Unit::TestCase
   def setup
     @X = '1'
     @o = '2' # the players' pieces. picked X and o so that it is easier to see when there are many in a small space
-    @winCondition = ConnectFourWinCondition.new
+    winLogic = ConnectFourWinCondition.new
+    @winCondition = WinCondition.new(@X,@o,winLogic)
     @xSize = 7
     @ySize = 6
     @board = Board.new([@ySize,@xSize])
@@ -30,7 +32,7 @@ class TestConnectFourWinCondition < Test::Unit::TestCase
     putPieces(@X,@X,@X,@o,@o,@o,@X)
     putPieces(@o,@o,@o,@X,@X,@X,@o)
     putPieces(@X,@X,@X,@o,@o,@o,@X)
-    putPieces(@o,@o,@o,@X,@X,@X,@O)
+    putPieces(@o,@o,@o,@X,@X,@X,@o)
     assert(!@winCondition.win(@board,@ySize-1,0))
   end
 

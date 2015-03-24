@@ -4,76 +4,11 @@ class OttoTootWinCondition
     'OTTO_TOOT'
   end
 
-  # T and O are the token T and O
-  def initialize(t,o)
-    @T = t
-    @O = o
-  end
-
-  # if the win condition has been met, return false. Otherwise, return the user
-  # who wins.
-  # input:
-  #   board: the state of the game
-  #   row: the row where the newest piece was placed
-  #   col: the column where the newest piece was placed
-  def win(board,row,col)
-    operations = [[:+,nil],[nil,:+],[:+,:+],[:+,:-]] # the four directions to win
-    winVal = false
-    anyWin = operations.any? {|i|
-      winVal = _axisWin(board,row,col,i[0],i[1])
-    }
-    if anyWin
-      return winVal
-    end
-    return false
-
-  end
-
-  # check if the given value is inbounds or not. True for row, and false for column
-  def _inbounds(val,rowCol,board)
-    if rowCol
-      return (val >=0 and val < board.getWidth)
-    end
-    return (val >= 0 and val < board.getHeight)
-  end
-
-  # see if the win condition is met on the given axis (vertical, horizontal,
-  # or one of the two diagonals). HorizontalOperation and verticalOperation
-  # should be either :+, :-, or nil, indicating what way will check on the axes.
-  # A line will be checked with a slope equal to horizontalOperation/verticalOperation
-  # (where nil is 0, + is one, and - is -1)
-  # For example, if horizontal is + and vertical is nil, we will check the
-  # horizontal axis. If horizontal is + and vertical is -, we will check a
-  # diagonal going down and right.
-  def _axisWin(board,row,col,horizontalOperation,verticalOperation)
-    # start on the far side, and make its way to the other side
-    winVal = false
-    (0..3).find {|i|
-      x = verticalOperation == nil ? row : row.send(verticalOperation,i)
-      y = horizontalOperation == nil ? col : col.send(horizontalOperation,i)
-      items = (0..3).collect {|j|
-        xMinus = verticalOperation == nil ? x : x - 0.send(verticalOperation,j)
-        yMinus = horizontalOperation == nil ? y : y - 0.send(horizontalOperation,j)
-        if !_inbounds(xMinus,false,board) or !_inbounds(yMinus,true,board)
-          false
-        else
-          board[xMinus, yMinus]
-        end
-      }
-      winner = _checkCondition(items)
-      if winner
-        winVal = winner
-        true
-      end
-    }
-    return winVal
-  end
-
-  def _checkCondition(items)
-    if items[0] == @T and items[1] == @O and items[2] == @O and items[3] == @T
-      return @T
-    elsif items[0] == @O and items[1] == @T and items[2] == @T and items[3] == @O
-      return @O
+  def checkCondition(items,p1,p2)
+    if items[0] == p1 and items[1] == p2 and items[2] == p2 and items[3] == p1
+      return p1
+    elsif items[0] == p2 and items[1] == p1 and items[2] == p1 and items[3] == p2
+      return p2
     end
     return false
   end
