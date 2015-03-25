@@ -1,7 +1,6 @@
 # this AI looks ahead 3 turns to see if it can win
 class AILogic
 
-  LOOK_AHEAD_COUNT = 6 # the number of turns the ai is able to look ahead
   WIN_TOKEN = 'win'
   LOSE_TOKEN = 'lose'
   NEITHER_TOKEN = 'neither'
