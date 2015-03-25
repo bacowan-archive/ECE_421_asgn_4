@@ -4,6 +4,8 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="window1">
     <property name="title" translatable="yes">Active Game</property>
+    <property name="default_width">700</property>
+    <property name="default_height">650</property>
     <child>
       <object class="GtkScrolledWindow" id="scrolledwindow1">
         <property name="visible">True</property>
