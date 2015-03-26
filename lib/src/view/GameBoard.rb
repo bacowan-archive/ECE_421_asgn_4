@@ -7,6 +7,7 @@ require_relative '../model/AIFactory.rb'
 
 class GameBoard
 	def initialize(choices)
+#get inputs from the select menu
 	@win = 0
 	if choices[0] == "Connect4"
 		gameType = ConnectFourWinCondition.name
@@ -39,19 +40,19 @@ class GameBoard
 	else
 		player2AI = false
 	end
-	
+	# setup The Game
 	dimensions = [6,7]
 	@game = GameFactory.new.createGame(gameType, player1Piece, player2Piece, dimensions)
         @game.addObserver(self)
 	@columnController = ColumnController.new(@game)
-
+# Setup the AI
 	aiFactory = AIFactory.new
 	aiFactory.createAI(player1AI,@game.winCondition,player1Piece,player2Piece,@columnController,@game)
 	aiFactory.createAI(player2AI,@game.winCondition,player2Piece,player1Piece,@columnController,@game)
 	
 
 
-
+#setup the window
   Gtk.init
     @builder = Gtk::Builder::new
     @builder.add_from_file("./lib/src/view/Game_Screen.glade")
@@ -93,11 +94,7 @@ def notify(*args)
 		board = args[1]
 		message = args[2]
 	
-		#Update the Board View
-		state_array = Array.new
-		board.getBoard.each{|row| row.each{|element| state_array << element}}
-		
-		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+		update(board)
 		
 		# Play Continues	
 		@builder.get_object("label1").text = message + " take your turn."
@@ -107,22 +104,15 @@ def notify(*args)
 		board = args[1]
 		message = args[2]
 
-		#Update the Board View
-		state_array = Array.new
-		board.getBoard.each{|row| row.each{|element| state_array << element}}
-
-		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+		update(board)
 
 		@builder.get_object("label1").text = message + " wins!"
 		@win = 1
 	elsif(flags_map[args[0]] == 2)
 		board = args[1]
 		#Stalemate Tell the Info Box
-		#Update the Board View
-		state_array = Array.new
-		board.getBoard.each{|row| row.each{|element| state_array << element}}
-
-		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+		
+		update(board)
 
 		@builder.get_object("label1").text = "Stalemate!"
 	elsif(flags_map[args[0]] == 3)
@@ -143,6 +133,15 @@ def play_move(col)
 	else
 		a=1
 	end
+end
+
+def update(board)
+#Update the Board View
+	state_array = Array.new
+	board.getBoard.each{|row| row.each{|element| state_array << element}}
+
+	(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+
 end
 
 	
