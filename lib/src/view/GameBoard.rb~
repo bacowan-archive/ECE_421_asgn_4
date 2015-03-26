@@ -31,7 +31,7 @@ class GameBoard
 	end
 
 	if choices[2] == "Computer"
-		player2AI = diff_map[choices[3]]
+		player2AI = diff_map[choices[4]]
 	else
 		player2AI = false
 	end

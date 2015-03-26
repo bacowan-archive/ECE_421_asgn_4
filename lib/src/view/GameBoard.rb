@@ -10,11 +10,12 @@ class GameBoard
 	@win = 0
 	if choices[0] == "Connect4"
 		gameType = ConnectFourWinCondition.name
-		@image_map = {0=>"./lib/src/view/Empty_Grid.png",
-				 "Red"=>"./lib/src/view/Red_Grid.png",
-				 "Yellow"=>"./lib/src/view/Yellow_Grid.png"}
 		player1Piece = "Red"
 		player2Piece = "Yellow"
+		@image_map = {0=>"./lib/src/view/Empty_Grid.png",
+				 player1Piece=>"./lib/src/view/Red_Grid.png",
+				 player2Piece=>"./lib/src/view/Yellow_Grid.png"}
+		
 	else
 		gameType = OttoTootWinCondition.name
 		@image_map = {0=>"./lib/src/view/Empty_Grid.png", "O"=>"./lib/src/view/O_Grid.png", "T"=>"./lib/src/view/T_Grid.png"}
