@@ -18,9 +18,12 @@ class GameBoard
 		
 	else
 		gameType = OttoTootWinCondition.name
-		@image_map = {0=>"./lib/src/view/Empty_Grid.png", "O"=>"./lib/src/view/O_Grid.png", "T"=>"./lib/src/view/T_Grid.png"}
 		player1Piece = "O"
 		player2Piece = "T"
+		@image_map = {0=>"./lib/src/view/Empty_Grid.png",
+				 player1Piece=>"./lib/src/view/O_Grid.png",
+				 player2Piece=>"./lib/src/view/T_Grid.png"}
+		
 	end
 
 	diff_map = {"Easy"=>1,"Medium"=>2,"Hard"=>3}
