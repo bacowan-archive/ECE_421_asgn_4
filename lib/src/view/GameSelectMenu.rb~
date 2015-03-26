@@ -7,7 +7,7 @@ class GameMenu
 # Initialize
     Gtk.init
     @builder = Gtk::Builder::new
-    @builder.add_from_file("./Game_Select_Screen.glade")
+    @builder.add_from_file("./lib/src/view/Game_Select_Screen.glade")
 
 #
 # Step 1: get the window to terminate the program when it's destroyed

@@ -112,7 +112,14 @@ def notify(*args)
 		@builder.get_object("label1").text = message + " wins!"
 		@win = 1
 	elsif(flags_map[args[0]] == 2)
+		board = args[1]
 		#Stalemate Tell the Info Box
+		#Update the Board View
+		state_array = Array.new
+		board.getBoard.each{|row| row.each{|element| state_array << element}}
+
+		(1..42).each{|i| @builder.get_object("image"+i.to_s).set(@image_map[state_array[i-1]])}
+
 		@builder.get_object("label1").text = "Stalemate!"
 	elsif(flags_map[args[0]] == 3)
 		#Column is full, Tell the player to pick another column

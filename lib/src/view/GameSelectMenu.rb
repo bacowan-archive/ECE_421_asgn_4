@@ -34,7 +34,7 @@ class GameMenu
   end
 	def start_game
 		#Get Choices
-		choices = (1..4).collect{|i| @builder.get_object("combobox" + i.to_s).active_text}
+		choices = (1..5).collect{|i| @builder.get_object("combobox" + i.to_s).active_text}
 		new_game = GameBoard.new(choices)
 			
 	end 
