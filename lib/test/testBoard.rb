@@ -74,4 +74,12 @@ class TestBoard < Test::Unit::TestCase
     }
     assert(@board.full)
   end
+
+  def testMarshal
+    mar = Marshal.dump(@board)
+    unMar = Marshal.load(mar)
+
+    assert_equal(@board,unMar)
+  end
+
 end
