@@ -75,7 +75,20 @@ class TestBoard < Test::Unit::TestCase
     assert(@board.full)
   end
 
-  def testMarshal
+  def testMarshalSimple
+    mar = Marshal.dump(@board)
+    unMar = Marshal.load(mar)
+
+    assert_equal(@board,unMar)
+  end
+
+  def testMarshalSlightlyFilled
+    @board.put(@pieceType1,0)
+    @board.put(@pieceType2,1)
+    @board.put(@pieceType1,0)
+    @board.put(@pieceType2,1)
+    @board.put(@pieceType1,0)
+
     mar = Marshal.dump(@board)
     unMar = Marshal.load(mar)
 
